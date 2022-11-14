@@ -1,0 +1,9 @@
+#!/bin/sh
+# Start uxplay to use airplay in ios
+
+systemctl start avahi-daemon
+echo "avahi-deomon service is started"
+
+echo "uxplay is starting..." | boxes -d stone
+
+xset s off -dpms && uxplay

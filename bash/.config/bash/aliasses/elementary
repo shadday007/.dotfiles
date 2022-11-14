@@ -1,0 +1,19 @@
+#
+# ~/.bashrc
+#
+
+# Aliases for software managment Debian Base distro
+
+# Source base
+. ~/.config/bash/aliasses/base
+
+# Specific and overriding aliases for Distro ArchLinux
+#
+# Aliases for software managment Debian Base distro
+# apt  or apt-get
+alias update="sudo apt-get update"
+alias upgrade="sudo apt-get upgrade"
+
+#unlock
+alias unlock="sudo rm /var/lib/dpkg/lock"
+

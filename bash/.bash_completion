@@ -1,0 +1,6 @@
+for bcfile in ~/.config/bash/bash_completion.d/* ; do
+  [ -f "$bcfile" ] && . $bcfile
+done
+cachedir=~/.local/share/tldr # Or whatever else the location of the tldr cache is
+complete -W "$(q=($cachedir/*/*); sed 's@\.md @ @g' <<<${q[@]##*/})" tldr
+

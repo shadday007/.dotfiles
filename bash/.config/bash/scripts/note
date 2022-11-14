@@ -1,0 +1,21 @@
+#!/usr/bin/bash
+
+if [ -z $1 ]; then
+    class='note'
+else
+    class=$1
+fi
+
+noteFilename="$HOME/Dropbox/notes/note-$(date +%Y-%m-%d).md"
+
+if [ ! -f $noteFilename ]; then
+  echo "# Notes for $(date +%Y-%m-%d)" > $noteFilename
+fi
+
+termite --class $class -e " \
+vim -c 'norm Go' \
+  -c 'norm Go## $(date +%H:%M):' \
+  -c 'norm Go' \
+     '+set spell spelllang=es' \
+  -c 'norm zz' \
+  -c 'startinsert' $noteFilename "

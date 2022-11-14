@@ -1,0 +1,58 @@
+#
+# ~/.bashrc
+#
+
+#list
+alias ls='ls --color=auto'
+alias la='ls -a'
+alias ll='ls -la'
+alias l='ls'
+alias l.="ls -A | egrep '^\.'"
+
+#fix obvious typo's
+alias cd..='cd ..'
+alias sl="ls"
+alias pdw="pwd"
+
+## Colorize the grep command output for ease of use (good for log files)##
+alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+
+#readable output
+alias df='df -h'
+
+#free
+alias free="free -mt"
+
+#continue download
+alias wget="wget -c"
+
+#userlist
+alias userlist="cut -d: -f1 /etc/passwd"
+
+#merge new settings
+alias merge="xrdb -merge ~/.Xresources"
+
+#ps
+alias ps="ps auxf"
+alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"
+
+#grub update
+alias update-grub="sudo grub-mkconfig -o /boot/grub/grub.cfg"
+
+#improve png
+alias fixpng="find . -type f -name "*.png" -exec convert {} -strip {} \;"
+
+#add new fonts
+alias fc='sudo fc-cache -fv'
+
+# Alias for dotfiles
+alias dgit='/usr/bin/git --git-dir=$HOME/.bare_dotfiles/ --work-tree=$HOME'
+alias dvim='GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME vim'
+alias dlg='( cd && GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME lazygit )'
+
+# Alias for vim
+alias v='vim'
+alias cv='cd ~/.vim'
+

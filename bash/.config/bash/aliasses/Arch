@@ -1,0 +1,33 @@
+#
+# ~/.bashrc
+#
+
+# Aliases specific for Distro ArchLinux
+
+# Source base
+. ~/.config/bash/aliasses/base
+
+# Specific and overriding aliases for Distro ArchLinux
+#
+# Aliases for software managment ArchLinux
+# pacman or pm
+alias pmsyu="sudo pacman -Syu --color=auto"
+alias pacman='sudo pacman --color auto'
+alias update='sudo pacman -Syu'
+
+# pacaur or pc
+alias pcsyu="pacaur -Syu"
+
+
+# yaourt keeps tmp folder cleaner than packer
+alias pks="yaourt -S --noconfirm "
+alias pksyu="yaourt -Syu --noconfirm"
+alias pksyua="yaourt -Syu  --aur --noconfirm"
+
+#get fastest mirrors in your neighborhood 
+alias mirror="sudo reflector --protocol https --latest 50 --number 20 --sort rate --save /etc/pacman.d/mirrorlist"
+alias mirrors=mirror
+
+#pacman unlock
+alias unlock="sudo rm /var/lib/pacman/db.lck"
+

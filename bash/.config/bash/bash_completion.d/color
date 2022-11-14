@@ -1,0 +1,17 @@
+# bash completion for "HOME"/.config/bash/scripts/color.sh -*- shell-script -*-
+
+_color()
+{
+  _color_commands=$(color -ls)
+  
+  local cur prev OPTS
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  
+  case $cur in
+   -*)           COMPREPLY=( $(compgen -W "-help -ls -" -- ${cur}) ) ;;
+    *)           COMPREPLY=( $(compgen -W "${_color_commands}" -- ${cur}) ) ;;
+  esac
+  return 0
+}
+complete -o nospace -F _color color
