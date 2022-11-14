@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
-if [[ -z $STOW_PACKAGES ]]; then
-    STOW_PACKAGES="mpv"
+if [[ -z $STOW_DIRECTORY ]]; then
+	STOW_DIRECTORY=$HOME/.dotfiles
 fi
 
-if [[ -z $STOW_DIRECTORY ]]; then
-    STOW_DIRECTORY=$HOME/.dotfiles
+# Navigate to the directory of this script 
+pushd $STOW_DIRECTORY
+
+if [[ -z $STOW_PACKAGES ]]; then
+	readarray -t STOW_PACKAGES < <(for i in $(ls -d [!^.]*/); do echo ${i%%/}; done)
 fi
 
 # Sync dotfiles repo and ensure that dotfiles are tangled correctly afterward
@@ -14,37 +17,39 @@ BLUE='\033[1;34m'
 RED='\033[1;30m'
 NC='\033[0m'
 
-# Navigate to the directory of this script 
-pushd $STOW_DIRECTORY
-
-echo -e "${BLUE}Stashing existing changes...${NC}"
+echo -e "${BLUE}Stashing existing changes in dotfiles...${NC}"
 stash_result=$(git checkout master;git stash push -m "sync-dotfiles: Before syncing dotfiles")
+echo -e "${BLUE}Stashing existing changes in submodules...${NC}"
 stash_result=$(git submodule foreach 'git checkout master; git stash')
 
 echo -e "${BLUE}Pulling updates from dotfiles repo...${NC}"
-echo
-git checkout master; git pull --recurse-submodules origin master
-echo
+git pull origin master
+echo -e "${BLUE}Pulling updates from submodules...${NC}"
+git submodule foreach 'git pull origin master'
 
 echo -e "${BLUE}Popping stashed changes...${NC}"
-echo
-git stash pop; git submodule foreach 'git stash pop'
+git stash pop
+echo -e "${BLUE}Popping stashed changes in submodules...${NC}"
+git submodule foreach 'git stash pop || :'
 
+echo -e "${BLUE}finding unmerged files in dotfiles repo...${NC}"
 unmerged_files=$(git diff --name-only --diff-filter=U)
-unmerged_files+=$(git submodule foreach 'git diff --name-only --diff-filter=U')
+echo -e "${BLUE}finding unmerged files in submodules...${NC}"
+git submodule foreach 'unmerged_files+=$(git diff --name-only --diff-filter=U)'
 
 if [[ ! -z $unmerged_files ]]; then
-   echo -e "${RED}The following files have merge conflicts after popping the stash:${NC}"
-   echo
-   printf %"s\n" $unmerged_files  # Ensure newlines are printed
+	echo -e "${RED}The following files have merge conflicts after popping the stash:${NC}"
+	echo
+	printf %"s\n" $unmerged_files  # Ensure newlines are printed
 else
-   # Run stow to ensure all new dotfiles are linked
-   for folder in $(echo $STOW_PACKAGES)
-   do
-	   echo "stow $folder"
-	   stow -D $folder
-	   stow $folder
-   done
+	# Run stow to ensure all new dotfiles are linked
+	echo -e "${GREEN}Run stow to ensure all new dotfiles are linked...${NC}"
+	for folder in "${STOW_PACKAGES[@]}"
+	do
+		echo "stow $folder"
+		stow -D $folder
+		stow $folder
+	done
 fi
 
 popd
