@@ -24,6 +24,6 @@ do
 	stow -D $folder
 done
 
-echo -e "${GREEN}Done...${NC}"
 popd
+echo -e "${GREEN}Done...${NC}"
 

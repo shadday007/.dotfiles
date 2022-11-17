@@ -13,17 +13,6 @@ BLUE='\033[1;34m'
 RED='\033[1;30m'
 NC='\033[0m'
 
-# Get the name of the current Git branch to check is master
-# branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
-branch=$(git symbolic-ref --short HEAD)
-
-if [ "$branch" == "master" ]
-then
-	echo "Compiling and deploying $branch to production..."
-else
-	echo "Will not publish from a branch other than master to production.\nPlease merge your changes into master and try again.\n\n"
-fi
-
 # Save changes on actual branches
 echo -e "${BLUE}Stashing existing changes in dotfiles...${NC}"
 git stash push -m "sync-dotfiles: Before syncing dotfiles"
@@ -64,4 +53,4 @@ echo -e "${BLUE}Popping stashed changes in submodules...${NC}"
 git submodule foreach 'git stash pop || :'
 
 popd
-
+echo -e "${GREEN}Done...${NC}"
