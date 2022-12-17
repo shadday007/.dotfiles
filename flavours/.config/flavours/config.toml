@@ -1,0 +1,72 @@
+shell = "bash -c '{}'"
+
+# [[items]]
+# file = "~/.config/beautifuldiscord/style.css"
+# template = "styles"
+# subtemplate = "css-variables"
+# start= "/* Start flavours */"
+# end = "/* End flavours */"
+
+#[[item]]
+#file = "~/.config/sway/border.svg"
+#template = "svg-circle"
+#rewrite = true
+#hook = "~/.config/sway/rendersvg.sh border"
+
+[[item]]
+file = "~/.vim/colors/base16.vim"
+template = "vim"
+rewrite = true
+
+[[item]]
+file = "~/.config/polybar/config"
+template = "polybar"
+start= "; Start flavours"
+end = "; End flavours"
+hook = "polybar-msg cmd restart"
+
+[[item]]
+file = "~/.config/alacritty/alacritty.yml"
+template = "alacritty"
+subtemplate = "default-256"
+start= "# Start flavours"
+end = "# End flavours"
+
+[[item]]
+file = "~/.config/termite/config"
+template = "termite"
+start= "# Start flavours"
+end = "# End flavours"
+hook = "pkill --signal USR1 termite"
+
+[[item]]
+file = "~/.config/kitty/current-theme.conf"
+template = "kitty"
+rewrite = true
+hook = "pkill --signal USR1 kitty"
+
+
+[[item]]
+file = "~/.Xresources"
+template = "xresources"
+subtemplate = "default-256"
+rewrite = true
+hook = "xrdb -load ~/.Xresources"
+
+[[item]]
+file = "~/.config/bat/themes/base16-theme.tmTheme"
+template = "textmate"
+rewrite = true
+hook = "bat cache --clear && bat cache --build"
+
+
+[[item]]
+file = "~/.config/fzf/.fzf-base16.sh"
+template = "fzf"
+rewrite = true
+
+[[item]]
+file = "~/.config/bspwm/bspwm_colors.sh"
+template = "bspwm"
+rewrite = true
+hook = "~/.config/bspwm/bspwm_colors.sh"
