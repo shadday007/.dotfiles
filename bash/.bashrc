@@ -13,7 +13,7 @@ export HISTCONTROL=ignoredups:erasedups
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 export HISTSIZE=5000
-HISTFILESIZE=10000
+export HISTFILESIZE=10000
 export HSTR_CONFIG=hicolor       # get more colors
 
 debug_handler() {
@@ -79,35 +79,14 @@ else
 fi
 # }}}
 
-# echo $TERM
-if [[ $TERM == xterm-termite ]]; then
-    . /etc/profile.d/vte*.sh
-    __vte_prompt_command
-fi
-
 [ -z "$TMUX" ] && export TERM=xterm-256color
 
-# Base16 Shell {{{
-BASE16_SHELL="$HOME/.config/base16-shell/"
-
-if [[ ! -f $BASE16_SHELL/profile_helper.sh ]]; then
-    git clone https://github.com/chriskempson/base16-shell.git "$BASE16_SHELL"
-fi
-
-#The -n returns TRUE if the length of STRING is nonzero.
-#has problem with vim terminal
-[ -n "$PS1" ] && \
-    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-    eval "$("$BASE16_SHELL/profile_helper.sh")"
-# }}}
-
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-export PATH="/home/shadday/.local/bin:$PATH"
-export PATH="/home/shadday/.config/bash/scripts/:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
+export PATH="$HOME/.config/bash/scripts/:$PATH"
 export PATH=".:$PATH"
-export PATH="/home/shadday/.gem/ruby/3.0.0/bin:$PATH"
-
-export MANPATH="$(manpath -g):$HOME/.cache/cppman:$HOME/.cache/cppman/manindex"   #no set for now
+export PATH="$HOME/.gem/ruby/3.0.0/bin:$PATH"
 
 # install font JetBrains Mono Regular Nerd Font Complete.ttf
 FONT_INSTALLED=$(fc-list | grep -i "JetBrainsMono");
@@ -123,40 +102,19 @@ if [ -z "$FONT_INSTALLED" ]; then
     fc-cache -f -v
 fi
 
-# Key bindings for command-line and Fuzzy finder completion for bash
-source /usr/share/fzf/completion.bash
-source /usr/share/fzf/key-bindings.bash
+source ~/.config/fzf/fzf.sh
 
-# 'fzf' configuration.
-export FZF_DEFAULT_OPTS="
---height 75% --multi --reverse --margin=0,1
---bind ctrl-f:page-down,ctrl-b:page-up
---bind pgdn:preview-page-down,pgup:preview-page-up
---prompt=\"❯ \"
---color bg+:#343d46,fg+:#dadada,hl:#0dbc79,hl+:#23d18b
---color border:#303030,info:#0dbc79,header:#80a0ff,spinner:#36c692
---color prompt:#87afff,pointer:#ff3c3c,marker:#f09479,gutter:-1
---preview '(highlight -O ansi {} || bat --color=always {}) 2> /dev/null | head -500'
-"
-export FZF_DEFAULT_COMMAND='fd --type f --color=never --hidden --exclude={.git,.idea,.vscode,.sass-cache,node_modules,build}'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_CTRL_T_OPTS='--multi --preview "bat --color=always --line-range :500 {}"'
-export FZF_ALT_C_COMMAND='fd --type d . --color=never --hidden'
-export FZF_ALT_C_OPTS='--preview "tree -C {} | head -100"'
-
-export BAT_THEME="base16-256"
+export BAT_THEME="base16-theme"
 
 # Ruby environment manager
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
 # starship prompt
 eval "$(starship init bash)"
 source /usr/share/nvm/init-nvm.sh
 
-source "$HOME"/.config/bash/scripts/color.sh
+#source "$HOME"/.config/bash/scripts/color.sh
 
 ### CREATE CUSTOM PROMPT(S)
 # txtblu='\[\033[00;34m\]'
