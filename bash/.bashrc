@@ -5,6 +5,8 @@ case $- in
     *) return ;;
 esac
 
+load() { test -f "$1" && source "$1"; }
+
 #IFS=$'\n'
 
 export HISTIGNORE="history*:[ \t]*:ls:ll:cd:cd -:man:man *:pwd:exit:date:* --help:"
@@ -72,11 +74,35 @@ stty -ixon  #Note that <C-Q> only works in a terminal if you disable flow contro
 
 # Execute Alias definitions. {{{
 DISTRO=$(cat /etc/issue  | head -n +1 | awk '{print $1}')
+
+load "$HOME/.config/bash/aliasses/base"   # Aliasses
 if [[ -f $HOME/.config/bash/aliasses/$DISTRO ]]; then
-    . "$HOME"/.config/bash/aliasses/"$DISTRO"
+    load "$HOME/.config/bash/aliasses/$DISTRO"   # Aliasses
 else
-    . "$HOME"/.config/bash/aliasses/default
+    load "$HOME/.config/bash/aliasses/default"   # Aliasses
 fi
+
+load "$HOME/.config/bash/exports/base"    # Exports
+if [[ -f $HOME/.config/bash/exports/$DISTRO ]]; then
+    load "$HOME/.config/bash/exports/$DISTRO"    # Exports
+else
+    load "$HOME/.config/bash/exports/default"   # Aliasses
+fi
+
+load "$HOME/.config/bash/functions/base"  # Funtions
+if [[ -f $HOME/.config/bash/functions/$DISTRO ]]; then
+    load "$HOME/.config/bash/functions/$DISTRO"  # Funtions
+else
+    load "$HOME/.config/bash/functions/default"   # Aliasses
+fi
+
+load "$HOME/.config/bash/paths/base"      # Paths
+if [[ -f $HOME/.config/bash/bash/paths/$DISTRO ]]; then
+    load "$HOME/.config/bash/paths/$DISTRO"      # Paths
+else
+    load "$HOME/.config/bash/paths/default"   # Aliasses
+fi
+
 # }}}
 
 [ -z "$TMUX" ] && export TERM=xterm-256color
