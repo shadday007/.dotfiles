@@ -64,9 +64,17 @@ hook = "bat cache --clear && bat cache --build"
 file = "~/.config/fzf/.fzf-base16.sh"
 template = "fzf"
 rewrite = true
+hook = "source ~/.config/fzf/fzf.sh"
 
 [[item]]
 file = "~/.config/bspwm/bspwm_colors.sh"
 template = "bspwm"
 rewrite = true
-hook = "~/.config/bspwm/bspwm_colors.sh"
+hook = "source ~/.config/bspwm/bspwm_colors.sh"
+
+[[item]]
+file = "~/.config/bash/scripts/base16_shell_colors.sh"
+template = "shell"
+rewrite = true
+hook = "source ~/.config/bash/scripts/base16_shell_colors.sh"
+

@@ -15,7 +15,8 @@ export HISTCONTROL=ignoredups:erasedups
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 export HISTSIZE=5000
-export HISTFILESIZE=10000
+export HISTSIZE=100000000000    # almost infinity history size for self-analysis later
+export HISTTIMEFORMAT="%F %T "  # add timestamp
 export HSTR_CONFIG=hicolor       # get more colors
 
 debug_handler() {
@@ -140,7 +141,7 @@ eval "$(rbenv init -)"
 eval "$(starship init bash)"
 source /usr/share/nvm/init-nvm.sh
 
-#source "$HOME"/.config/bash/scripts/color.sh
+source "$HOME"/.config/bash/scripts/color.sh
 
 ### CREATE CUSTOM PROMPT(S)
 # txtblu='\[\033[00;34m\]'

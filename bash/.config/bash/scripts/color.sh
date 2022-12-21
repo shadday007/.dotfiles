@@ -1,13 +1,32 @@
 #!/usr/bin/bash
 #
-# Colors
+# Color
 #
 
 BASE16_CONFIG=~/.vim/.base16
+BASE16_LAST_SCHEME=~/.local/share/flavours/lastscheme
 
+blk='\033[1;30m'   # Black
+red='\033[1;31m'   # Red
+grn='\033[1;32m'   # Green
+ylw='\033[1;33m'   # Yellow
+blu='\033[1;34m'   # Blue
+pur='\033[1;35m'   # Purple
+cyn='\033[1;36m'   # Cyan
+wht='\033[1;37m'   # White
+clr='\033[0m'      # Reset
 
 function pause(){
    read -rp "$*"
+}
+
+err() {
+  echo -e "${red}Error: $*${clr}" >&2
+}
+
+bug() {
+  echo -e "${ylw}A bug occured. Please copy the following message and report the bug here: https://github.com/shadday007/.dotfiles"
+  echo -e "${red}$*${clr}"
 }
 
 # Takes a hex color in the form of "RRGGBB" and outputs its luma (0-255, where
@@ -19,7 +38,7 @@ luma() {
   local COLOR_HEX=$1
 
   if [ -z "$COLOR_HEX" ]; then
-    echo "Missing argument hex color (RRGGBB)"
+    err "Missing argument hex color (RRGGBB)"
     return 1
   fi
 
@@ -58,18 +77,33 @@ luma() {
 color() {
 
   local SCHEME="$1"
-  local BASE16_DIR=~/.config/base16-shell/scripts
+  local BASE16_DIR=~/.vim/colors
   local BASE16_CONFIG_PREVIOUS="$BASE16_CONFIG.previous"
   local STATUS=0
 
   __color() {
     SCHEME=$1
-    local FILE="$BASE16_DIR/base16-$SCHEME.sh"
+
+    flavours apply $SCHEME
+    test $? -eq 0 || bug "There was some error applying scheme:  $SCHEME"
+    
+    # hooks in flavours config don't work in this env.
+    source ~/.config/fzf/fzf.sh
+    source ~/.config/bspwm/bspwm_colors.sh
+    source ~/.config/bash/scripts/base16_shell_colors.sh
+
+    local SCHEME=$(head -1 "$BASE16_LAST_SCHEME")
+    local FILE_BASE="$BASE16_DIR/base16.vim"
+    local FILE="$BASE16_DIR/base16-$SCHEME.vim"
+
+    rm $BASE16_DIR/base16-*.vim 2>/dev/null
+    mv $FILE_BASE $FILE
+
     if [[ -e "$FILE" ]]; then
       local BG
       local LUMA
       local BACKGROUND
-      BG=$(grep color_background= "$FILE" | cut -d \" -f2 | sed -e 's#/##g')
+      BG=$(grep 's:gui00\s*=' "$FILE" | cut -d \" -f2)
       LUMA=$(luma "$BG")
 
       if [ "$(echo "$LUMA <= 127.5" | bc)" -eq 1 ]; then
@@ -85,11 +119,15 @@ color() {
 
       echo "$SCHEME" > "$BASE16_CONFIG"
       echo "$BACKGROUND" >> "$BASE16_CONFIG"
-      sh "$FILE"
+      echo "vim9script" > ~/.vim/vimrc-colorscheme.vim
+      echo "if !exists('g:colors_name') || g:colors_name != 'base16-$SCHEME'" >> ~/.vim/vimrc-colorscheme.vim
+      echo "  colorscheme base16-$SCHEME" >> ~/.vim/vimrc-colorscheme.vim
+      echo "  set background=$BACKGROUND" >> ~/.vim/vimrc-colorscheme.vim
+      echo "endif" >> ~/.vim/vimrc-colorscheme.vim
 
       if [ -n "$TMUX" ]; then
         local CC
-        CC=$(grep color18= "$FILE" | cut -d \" -f2 | sed -e 's#/##g')
+        CC=$(grep 's:gui01\s*=' "$FILE" | cut -d \" -f2)
         if [ -n "$BG" ] && [ -n "$CC" ]; then
           command tmux set -a window-active-style "bg=#$BG"
           command tmux set -a window-style "bg=#$CC"
@@ -98,14 +136,14 @@ color() {
         fi
       fi
     else
-      echo "Scheme '$SCHEME' not found in $BASE16_DIR"
+      err "Scheme '$SCHEME' not found in $BASE16_DIR"
       STATUS=1
     fi
   }
 
   if [ $# -eq 0 ]; then
     if [ -s "$BASE16_CONFIG" ]; then
-      cat "$BASE16_CONFIG"
+      echo -e "${grn}";cat "$BASE16_CONFIG";echo -e "${clr}"
       local SCHEME
       SCHEME=$(head -1 "$BASE16_CONFIG")
       __color "$SCHEME"
@@ -116,35 +154,44 @@ color() {
   fi
 
   case "$SCHEME" in
-  -help)
-    echo 'color                                   (show current scheme)'
-    echo 'color -                                 (switch to previous scheme)'
-    echo 'color default-dark|grayscale-light|...  (switch to scheme)'
-    echo 'color -help                             (show this help)'
-    echo 'color -ls [pattern]                     (list available schemes)'
-    return
-    ;;
-  -ls)
-    find "$BASE16_DIR" -name 'base16-*.sh' | \
-      sed -E 's|.+/base16-||' | \
-      sed -E 's/\.sh//' | \
-      grep "${2:-.}" | \
-      sort | \
-      column
+    "-h"|"-?"|"--help")
+      echo -e "${wht}Usage: ${pur}color${clr} [${grn}options]${clr} [${grn}scheme]${clr} [${grn}pattern]${clr}"
+      echo -e "  The default is to show current scheme.\n"
+      echo -e "${wht}Options:"
+      echo -e "  ${blu}-h,-?,--help                    ${clr} (show this help)"
+      echo -e "  ${blu}-l,--list [pattern]             ${clr} (list available schemes)"
+      echo -e "  ${blu}-s,--switch [scheme] | [pattern]${clr} (switch to scheme)"
+      echo -e "  ${blu}-                               ${clr} (switch to previous scheme)\n"
+      return
       ;;
-  -)
-    if [[ -s "$BASE16_CONFIG_PREVIOUS" ]]; then
-      local PREVIOUS_SCHEME
-      PREVIOUS_SCHEME=$(head -1 "$BASE16_CONFIG_PREVIOUS")
-      __color "$PREVIOUS_SCHEME"
-    else
-      echo "warning: no previous config found at $BASE16_CONFIG_PREVIOUS"
-      STATUS=1
-    fi
-    ;;
-  *)
-    __color "$SCHEME"
-    ;;
+    "-l"|"--list")
+      flavours list $2 |
+        xargs -n1 |
+        fzf --preview "flavours info {} 2>/dev/null"
+        ;;
+    -)
+      if [[ -s "$BASE16_CONFIG_PREVIOUS" ]]; then
+        local PREVIOUS_SCHEME
+        PREVIOUS_SCHEME=$(head -1 "$BASE16_CONFIG_PREVIOUS")
+        __color "$PREVIOUS_SCHEME"
+      else
+        echo "${ylw}Warning: no previous config found at $BASE16_CONFIG_PREVIOUS${clr}"
+        STATUS=1
+      fi
+      ;;
+    "-s"|"--switch")
+      __color $( flavours list $2 |
+        xargs -n1 |
+        fzf --preview "flavours info {} 2>/dev/null" )
+        ;;
+    *)
+      if  flavours list | grep -wq $SCHEME 2>/dev/null  ; then
+        __color "$SCHEME"
+      else
+        err "Scheme not found"
+        STATUS=1
+      fi
+      ;;
   esac
 
   unset -f __color
@@ -154,11 +201,13 @@ color() {
 if [[ -s "$BASE16_CONFIG" ]]; then
   SCHEME=$(head -1 "$BASE16_CONFIG")
   BACKGROUND=$(sed -n -e '2 p' "$BASE16_CONFIG")
-  #echo $SCHEME $BACKGROUND
+  PREVIOUS_SCHEME=$(head -1 "$BASE16_CONFIG.previous")
+
   if [ "$BACKGROUND" != 'dark' ] && [ "$BACKGROUND" != 'light' ]; then
-    echo "warning: unknown background type in $BASE16_CONFIG"
+    echo -e "${ylw}Warning: unknown background type in $BASE16_CONFIG${clr}"
+  elif [ "$SCHEME" != "$PREVIOUS_SCHEME" ]; then
+    color "$SCHEME"
   fi
-  color "$SCHEME"
 else
   # Default.
   color  default-dark

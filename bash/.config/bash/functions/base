@@ -22,12 +22,3 @@ ex() {
     echo "'$1' is not a valid file"
   fi
 }
-
-# Theme Switcher
-fv() {
-  flavours list |
-    xargs -n1 |
-    fzf --preview "flavours apply {} 2>/dev/null" |
-    xargs -I % flavours apply %
-}
-

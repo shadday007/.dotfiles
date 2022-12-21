@@ -2,14 +2,14 @@
 
 _color()
 {
-  _color_commands=$(color -ls)
+  _color_commands=$(flavours list)
   
-  local cur prev OPTS
+  local cur
   COMPREPLY=()
   cur="${COMP_WORDS[COMP_CWORD]}"
   
   case $cur in
-   -*)           COMPREPLY=( $(compgen -W "-help -ls -" -- ${cur}) ) ;;
+   -*)           COMPREPLY=( $(compgen -W "- -s --swicth -h -? --help -l --list" -- ${cur}) ) ;;
     *)           COMPREPLY=( $(compgen -W "${_color_commands}" -- ${cur}) ) ;;
   esac
   return 0

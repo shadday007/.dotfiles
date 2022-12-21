@@ -1,25 +1,25 @@
-# Base16 Default Dark
-# Scheme author: Chris Kempson (http://chriskempson.com)
+# Base16 Horizon Dark
+# Scheme author: Michaël Ball (http://github.com/michael-ball/)
 # Template author: Tinted Theming (https://github.com/tinted-theming)
 
 _gen_fzf_default_opts() {
 
-local color00='#181818'
-local color01='#282828'
-local color02='#383838'
-local color03='#585858'
-local color04='#b8b8b8'
-local color05='#d8d8d8'
-local color06='#e8e8e8'
-local color07='#f8f8f8'
-local color08='#ab4642'
-local color09='#dc9656'
-local color0A='#f7ca88'
-local color0B='#a1b56c'
-local color0C='#86c1b9'
-local color0D='#7cafc2'
-local color0E='#ba8baf'
-local color0F='#a16946'
+local color00='#1C1E26'
+local color01='#232530'
+local color02='#2E303E'
+local color03='#6F6F70'
+local color04='#9DA0A2'
+local color05='#CBCED0'
+local color06='#DCDFE4'
+local color07='#E3E6EE'
+local color08='#E95678'
+local color09='#FAB795'
+local color0A='#FAC29A'
+local color0B='#29D398'
+local color0C='#59E1E3'
+local color0D='#26BBD9'
+local color0E='#EE64AC'
+local color0F='#F09383'
 
 export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS"\
 " --color=bg+:$color01,bg:$color00,spinner:$color0C,hl:$color0D"\
