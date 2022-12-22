@@ -119,6 +119,7 @@ color() {
 
       echo "$SCHEME" > "$BASE16_CONFIG"
       echo "$BACKGROUND" >> "$BASE16_CONFIG"
+
       echo "vim9script" > ~/.vim/vimrc-colorscheme.vim
       echo "if !exists('g:colors_name') || g:colors_name != 'base16-$SCHEME'" >> ~/.vim/vimrc-colorscheme.vim
       echo "  colorscheme base16-$SCHEME" >> ~/.vim/vimrc-colorscheme.vim
@@ -146,7 +147,10 @@ color() {
       echo -e "${grn}";cat "$BASE16_CONFIG";echo -e "${clr}"
       local SCHEME
       SCHEME=$(head -1 "$BASE16_CONFIG")
-      __color "$SCHEME"
+      PREVIOUS_SCHEME=$(head -1 "$BASE16_CONFIG.previous")
+      if [ "$SCHEME" != "$PREVIOUS_SCHEME" ]; then
+        __color "$SCHEME"
+      fi
       return
     else
       SCHEME=help
