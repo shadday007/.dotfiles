@@ -1,0 +1,46 @@
+# ./watchcolor
+
+# colors 
+blk='\033[1;30m'   # Black
+red='\033[1;31m'   # Red
+grn='\033[1;32m'   # Green
+ylw='\033[1;33m'   # Yellow
+blu='\033[1;34m'   # Blue
+pur='\033[1;35m'   # Purple
+cyn='\033[1;36m'   # Cyan
+wht='\033[1;37m'   # White
+clr='\033[0m'      # Reset
+
+# run every interval in seconds
+timeinterval=4;
+
+# Main files and folders
+fileShell="$HOME"/.config/bash/scripts/base16_shell_colors.sh
+fileFzf="$HOME"/.config/fzf/.fzf-base16.sh
+scriptName=${0##*/}
+
+log="$HOME"/.log/"$scriptName".log
+if [[ ! -f "$log" ]] ; then 
+  touch "$log"
+  echo "Creating  $log" >> $log
+fi
+
+source "$HOME"/.config/bash/scripts/color.sh
+color -r
+
+chksum1=$( md5sum ${fileShell} | cut -d " " -f 1 )
+
+while [[ true ]]; do
+
+    chksum2=$( md5sum ${fileShell} | cut -d " " -f 1 )
+
+    if [[ -n $chksum1 && $chksum1 != $chksum2 ]] ; then 
+        printf "${grn}ColorScheme changed.${clr}\n" >> $log
+        "$fileShell"
+        source "$fileFzf"
+        chksum1="$chksum2"
+    fi
+
+    #echo -e "Checksum2: $chksum2\nChecksum1: $chksum1\n";
+    sleep $timeinterval;
+done

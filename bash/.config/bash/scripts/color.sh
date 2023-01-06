@@ -88,9 +88,9 @@ color() {
     test $? -eq 0 || bug "There was some error applying scheme:  $SCHEME"
     
     # hooks in flavours config don't work in this env.
-    source ~/.config/fzf/fzf.sh
-    source ~/.config/bspwm/bspwm_colors.sh
-    source ~/.config/bash/scripts/base16_shell_colors.sh
+    source ~/.config/fzf/.fzf-base16.sh
+    ~/.config/bspwm/bspwm_colors.sh
+    ~/.config/bash/scripts/base16_shell_colors.sh
 
     local SCHEME=$(head -1 "$BASE16_LAST_SCHEME")
     local FILE_BASE="$BASE16_DIR/base16.vim"
@@ -122,6 +122,7 @@ color() {
 
       echo "vim9script" > ~/.vim/vimrc-colorscheme.vim
       echo "if !exists('g:colors_name') || g:colors_name != 'base16-$SCHEME'" >> ~/.vim/vimrc-colorscheme.vim
+      echo "  execute 'silent !/bin/bash $HOME/.config/bash/scripts/base16_shell_colors.sh'" >> ~/.vim/vimrc-colorscheme.vim
       echo "  colorscheme base16-$SCHEME" >> ~/.vim/vimrc-colorscheme.vim
       echo "  set background=$BACKGROUND" >> ~/.vim/vimrc-colorscheme.vim
       echo "endif" >> ~/.vim/vimrc-colorscheme.vim
@@ -136,6 +137,7 @@ color() {
           command tmux set -g pane-border-style "bg=#$CC"
         fi
       fi
+
     else
       err "Scheme '$SCHEME' not found in $BASE16_DIR"
       STATUS=1
@@ -166,6 +168,7 @@ color() {
       echo -e "  ${blu}-l,--list [pattern]             ${clr} (list available schemes)"
       echo -e "  ${blu}-s,--switch [scheme] | [pattern]${clr} (switch to scheme)"
       echo -e "  ${blu}-                               ${clr} (switch to previous scheme)\n"
+      echo -e "  ${blu}-r,--reload                     ${clr} (reload current scheme)"
       return
       ;;
     "-l"|"--list")
@@ -173,13 +176,23 @@ color() {
         xargs -n1 |
         fzf --preview "flavours info {} 2>/dev/null"
         ;;
+    "-r"|"--reload")
+      if [[ -s "$BASE16_CONFIG" ]]; then
+        local SCHEME
+        SCHEME=$(head -1 "$BASE16_CONFIG")
+        __color "$SCHEME"
+      else
+        echo "${ylw}Warning: no current scheme found at $BASE16_CONFIG${clr}"
+        STATUS=1
+      fi
+      ;;
     -)
       if [[ -s "$BASE16_CONFIG_PREVIOUS" ]]; then
         local PREVIOUS_SCHEME
         PREVIOUS_SCHEME=$(head -1 "$BASE16_CONFIG_PREVIOUS")
         __color "$PREVIOUS_SCHEME"
       else
-        echo "${ylw}Warning: no previous config found at $BASE16_CONFIG_PREVIOUS${clr}"
+        echo "${ylw}Warning: no previous scheme found at $BASE16_CONFIG_PREVIOUS${clr}"
         STATUS=1
       fi
       ;;

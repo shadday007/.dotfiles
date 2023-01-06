@@ -14,6 +14,21 @@ shell = "bash -c '{}'"
 #hook = "~/.config/sway/rendersvg.sh border"
 
 [[item]]
+file = "~/.config/bash/scripts/base16_shell_colors.sh"
+template = "shell"
+rewrite = true
+
+[[item]]
+file = "~/.config/fzf/.fzf-base16.sh"
+template = "fzf"
+rewrite = true
+
+[[item]]
+file = "~/.config/bspwm/bspwm_colors.sh"
+template = "bspwm"
+rewrite = true
+
+[[item]]
 file = "~/.vim/colors/base16.vim"
 template = "vim"
 rewrite = true
@@ -59,22 +74,19 @@ template = "textmate"
 rewrite = true
 hook = "bat cache --clear && bat cache --build"
 
+#To allow themes to apply to GUI apps running as root run this command in your terminal
+#to create symlinks to user themes in the system.
+#sudo ln -s ~/.themes/* /usr/share/themes/
+[[item]]
+file = "~/.themes/FlatColor/colors3"
+template = "gtk-flatcolor"
+subtemplate = "gtk-3"
+rewrite = true
+hook = "xfconf-query -c xsettings -p /Net/ThemeName -s Dummy && xfconf-query -c xsettings -p /Net/ThemeName -s FlatColor"
 
 [[item]]
-file = "~/.config/fzf/.fzf-base16.sh"
-template = "fzf"
+file = "~/.themes/FlatColor/colors2"
+template = "gtk-flatcolor"
+subtemplate = "gtk-2"
 rewrite = true
-hook = "source ~/.config/fzf/fzf.sh"
-
-[[item]]
-file = "~/.config/bspwm/bspwm_colors.sh"
-template = "bspwm"
-rewrite = true
-hook = "source ~/.config/bspwm/bspwm_colors.sh"
-
-[[item]]
-file = "~/.config/bash/scripts/base16_shell_colors.sh"
-template = "shell"
-rewrite = true
-hook = "source ~/.config/bash/scripts/base16_shell_colors.sh"
 
