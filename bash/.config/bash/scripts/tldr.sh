@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set +vx -o pipefail
 [[ $- = *i* ]] && echo "Don't source this script!" && return 1
-version='0.45'
-# tldr-bash-client version 0.44
+version='0.4.10'
+# tldr-bash-client version 0.48
 # Bash client for tldr: community driven man-by-example
 # - forked from Ray Lee, https://github.com/raylee/tldr
 # - modified and expanded by pepa65: https://gitlab.com/pepa65/tldr-bash-client
-# - binary download: http://4e4.win/tldr
+# - binary download: https://good4.eu/tldr
 # Requiring: coreutils, grep, unzip, curl/wget, less (optional)
 
 # The 5 elements in TLDR markup that can be styled with these colors and
@@ -205,9 +205,9 @@ Config(){
 	Init_term
 	[[ $TLDR_LESS = 0 ]] &&
 		trap 'cat <<<"$stdout"' EXIT ||
-		trap 'less -~RXQFP"Browse up/down, press Q to exit " <<<"$stdout"' EXIT
+		trap 'less -Gg -~RXQFP"Browse up/down, press Q to exit " <<<"$stdout"' EXIT
 
-	ver="tldr-bash-client version $version$XB  ${URL}http://gitlab.com/pepa65/tldr-bash-client$XURL"
+	ver="tldr-bash-client version $version$XB  ${URL}https://gitlab.com/pepa65/tldr-bash-client$XURL"
 
 	# Select download method
 	! dl="$(type -P curl) -sLfo" &&
@@ -216,7 +216,7 @@ Config(){
 		exit 3
 
 	repo_url='https://raw.githubusercontent.com/tldr-pages/tldr/master'
-	zip_url='http://tldr.sh/assets/tldr.zip'
+	zip_url='https://tldr.sh/assets/tldr.zip'
 
 	cachedir=$TLDR_CACHE_LOCATION
 	if [[ -z $cachedir ]]
@@ -229,7 +229,7 @@ Config(){
 		Err "Can't create the pages cache location $cachedir" &&
 		exit 4
 	# Indexes for every language should be available, $pages instead of pages
-	index=$cachedir/pages/index.json
+	index=$cachedir/index.json
 	# update if the file doesn't exists, or if it's older than $TLDR_EXPIRY
 	[[ -f $index ]] && Recent "$index" || Cache_fill
 	platforms=$(cd "$cachedir/pages"; ls -d -- */ |tr -d /)
@@ -357,7 +357,7 @@ Display_tldr(){
 	done <"$1"
 	[[ $TLDR_LESS = 0 ]] && 
 		trap 'cat <<<"$stdout"' EXIT ||
-		trap 'less +Gg -~RXQFP"%pB\% tldr $I$page$XI - browse up/down, press Q to exit" <<<"$stdout"' EXIT
+		trap 'less -Gg -~RXQFP"%pB\% tldr $I$page$XI - browse up/down, press Q to exit" <<<"$stdout"' EXIT
 }
 
 # $1: exit code; Uses: platform index
@@ -371,7 +371,8 @@ List_pages(){
 			pregex=common ptext="platform not detected, ${I}common$XI"
 	fi
 	Inf "Known tldr pages from $ptext:"
-	Out "$(tr '{' '\n' <"$index" |grep $pregex |cut -d "$Q" -f4 |column)"
+	Out "$(tr '{' '\n' <"$index" |grep '^"name"' |grep $pregex |
+			cut -d "$Q" -f4 |column)"
 	exit "$1"
 }
 
@@ -418,7 +419,7 @@ Cache_fill(){
 		exit 9
 	fi
 	rm -rf -- "${cachedir:?}/"*
-	mv -- "$tmp"/pages* "${cachedir:?}/"
+	mv -- "$tmp/index.json" "$tmp"/pages* "${cachedir:?}/"
 	rm -rf -- "$tmp"
 	Inf "Pages cached in $U$cachedir$XU"
 	updated=1
