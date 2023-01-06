@@ -137,11 +137,12 @@ export BAT_THEME="base16-theme"
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
-# starship prompt
-eval "$(starship init bash)"
 source /usr/share/nvm/init-nvm.sh
 
 source "$HOME"/.config/bash/scripts/color.sh
+
+# starship prompt
+eval "$(starship init bash)" > ~/.log/starship
 
 ### CREATE CUSTOM PROMPT(S)
 # txtblu='\[\033[00;34m\]'
