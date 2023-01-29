@@ -1,1 +1,5 @@
 /tags
+
+bash/.config/bash/scripts/base16_shell_colors.sh
+
+fzf/.config/fzf/.fzf-base16.sh

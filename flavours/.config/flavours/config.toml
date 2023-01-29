@@ -32,6 +32,7 @@ rewrite = true
 file = "~/.vim/colors/base16.vim"
 template = "vim"
 rewrite = true
+hook = "pkill --signal USR1 vim"
 
 [[item]]
 file = "~/.config/polybar/config"
