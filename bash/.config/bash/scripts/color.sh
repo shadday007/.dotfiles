@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 #
 # Color
 #
@@ -86,7 +86,7 @@ color() {
 
     flavours apply $SCHEME
     test $? -eq 0 || bug "There was some error applying scheme:  $SCHEME"
-    
+
     # hooks in flavours config don't work in this env.
     source ~/.config/fzf/.fzf-base16.sh
     ~/.config/bspwm/bspwm_colors.sh
@@ -120,11 +120,13 @@ color() {
       echo "$SCHEME" > "$BASE16_CONFIG"
       echo "$BACKGROUND" >> "$BASE16_CONFIG"
 
+      # NOTE: set background must be first and then colorscheme
+      # because syncolor.vim is sourcing twice
       echo "vim9script" > ~/.vim/vimrc-colorscheme.vim
       echo "if !exists('g:colors_name') || g:colors_name != 'base16-$SCHEME'" >> ~/.vim/vimrc-colorscheme.vim
-      echo "  execute 'silent !/bin/bash $HOME/.config/bash/scripts/base16_shell_colors.sh'" >> ~/.vim/vimrc-colorscheme.vim
-      echo "  colorscheme base16-$SCHEME" >> ~/.vim/vimrc-colorscheme.vim
+      echo "  silent! execute '$HOME/.config/bash/scripts/base16_shell_colors.sh'" >> ~/.vim/vimrc-colorscheme.vim
       echo "  set background=$BACKGROUND" >> ~/.vim/vimrc-colorscheme.vim
+      echo "  colorscheme base16-$SCHEME" >> ~/.vim/vimrc-colorscheme.vim
       echo "endif" >> ~/.vim/vimrc-colorscheme.vim
 
       if [ -n "$TMUX" ]; then
